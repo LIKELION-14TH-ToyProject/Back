@@ -107,7 +107,7 @@ AUTH_USER_MODEL = 'auth.User'
 LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
-
+co
 USE_I18N = True
 
 USE_TZ = True
