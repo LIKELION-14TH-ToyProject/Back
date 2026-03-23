@@ -1,0 +1,10 @@
+<a href="{%url 'diary:new'%}">새글 작성</a>
+
+{% for post in posts.all %}
+<h3>
+<a href="{% url 'diary:detail' post.id %}">
+{{post.title}}
+</a>
+</h3>
+{{post.created_at}}
+{% endfor %}
