@@ -144,22 +144,22 @@
           {{ post.content }}
         </div>
 
+                <!-- 해시태그 -->
+        {% if post.hashtag.all %}
+        <div class="hashtag-list">
+          {% for hashtag in post.hashtag.all %}
+          <span class="hashtag-item">#{{ hashtag.hashtag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
         <footer class="post-footer">
-          
-
-
-
-{{post.created_at}}
-
-
-
-
-
-          <a href="{% url 'diary:home' %}">목록으로</a>
-          <a href="{% url 'diary:delete' post.id %}">삭제하기</a>
-          <a href="{% url 'diary:update_page' post.id %}">수정하기</a>
+          <a href="{% url 'diary:update_page' post.id %}" class="btn btn-edit">수정</a>
+          <a href="{% url 'diary:delete' post.id %}" class="btn btn-delete" onclick="return confirm('진짜 삭제하실 건가요?')">삭제</a>
         </footer>
       </article>
+
+        
     </main>
   </body>
 </html>

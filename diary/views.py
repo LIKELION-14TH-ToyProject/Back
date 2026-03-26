@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post
+from .models import Post, Hashtag
 
 from .forms import PostForm
 
@@ -9,7 +9,8 @@ def home(request):
 
 def detail(request, post_id):
     post_detail=get_object_or_404(Post, pk=post_id)
-    return render(request, 'detail.html', {'post': post_detail})
+    post_hashtag=post_detail.hashtag.all()
+    return render(request, 'detail.html', {'post': post_detail, 'hashing': post_hashtag})
 
 def new(request):
     form=PostForm()
@@ -20,6 +21,13 @@ def create (request):
     if form.is_valid():
         new_diary=form.save(commit=False)
         new_diary.save()
+        hashtags=request.POST['hashtags']
+        hashtag_list=hashtags.split(', ')
+
+        for tag in hashtag_list:
+            tag = tag.strip()
+            new_hashtag=Hashtag.objects.get_or_create(hashtag=tag)
+            new_diary.hashtag.add(new_hashtag[0])
         return redirect('diary:detail', new_diary.id)
     return redirect('diary:home')
 
