@@ -92,6 +92,7 @@
         margin-bottom: 1.5rem;
       }
 
+      
       .post-content {
         font-size: 1.1rem;
         line-height: 1.7;
@@ -99,6 +100,25 @@
         white-space: pre-wrap; /* DB의 줄바꿈을 화면에 그대로 반영 */
         min-height: 150px;
       }
+
+            /* 해시태그 */
+      .hashtag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 2rem;
+      }
+ 
+      .hashtag-item {
+        display: inline-block;
+        padding: 0.3rem 0.75rem;
+        background-color: #ede9fe;
+        color: #6366f1;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+
 
       /* 하단 버튼 (수정/삭제) */
       .post-footer {
@@ -143,8 +163,12 @@
         <div class="post-content">
           {{ post.content }}
         </div>
+        {% if post.photo %}
+        <img src="{{ post.photo.url }}" alt="" height="400px;">
+        {% endif %}
+        <br>
 
-                <!-- 해시태그 -->
+        <!-- 해시태그 -->
         {% if post.hashtag.all %}
         <div class="hashtag-list">
           {% for hashtag in post.hashtag.all %}

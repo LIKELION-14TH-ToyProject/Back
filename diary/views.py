@@ -10,7 +10,7 @@ def home(request):
 def detail(request, post_id):
     post_detail=get_object_or_404(Post, pk=post_id)
     post_hashtag=post_detail.hashtag.all()
-    return render(request, 'detail.html', {'post': post_detail, 'hashing': post_hashtag})
+    return render(request, 'detail.html', {'post': post_detail, 'hashtag': post_hashtag})
 
 def new(request):
     form=PostForm()

@@ -1,3 +1,26 @@
+{% load static %}
+
+
+{% if not user.is_authenticated %}
+    <a href="{% url 'accounts:signup' %}">회원가입하기</a>
+    <a href="{% url 'accounts:login' %}">로그인하기</a>
+{% endif %}
+{% if user.is_authenticated %}
+    <a href="{% url 'accounts:logout' %}">로그아웃하기</a>
+    <p>로그인 한 사람: {{ user.username }}
+        <br>
+        <hr>
+        아이디 : {{user.username}} 닉네임: {{user.nickname}} 
+    </p>
+{% endif %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/static_base.css' %}">
+<link rel="stylesheet" href="{% static 'css/diary/static_app.css' %}">
+<title>Home</title>
+{% endblock %}
+
+<h1>블로그 프로젝트</h1>
 <a href="{%url 'diary:new'%}">새글 작성</a>
 
 {% for post in posts.all %}
