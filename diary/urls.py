@@ -1,14 +1,10 @@
 from django.urls import path
 from .views import *
 
-app_name= 'diary'
+app_name = 'diary'
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('post/<int:post_id>', detail, name='detail'),
-    path('new/', new, name="new"),
-    path('create/', create, name="create"),
-    path('delete/<int:post_id>', delete, name="delete"),
-    path('update_page/<int:post_id>', update_page, name="update_page"),
-    path('update_post/<int:post_id>', update_post, name="update_post"),
+    path('', PostListView.as_view()),
+    path('<int:pk>/', PostDetailView.as_view()),
+    path('comments/', CommentView.as_view()),
 ]

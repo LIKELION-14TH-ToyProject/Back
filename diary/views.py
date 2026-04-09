@@ -1,48 +1,56 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Hashtag
+from django.http import HttpRequest, Http404
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Post
+from .serializers import PostSerializer, CommentSerializer
 
-from .forms import PostForm
+class PostListView(APIView):
+   def get(self, request:HttpRequest, format=None):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+   
+   def post(self, request:HttpRequest, format=None):
+       serializer = PostSerializer(data=request.data)
+       if serializer.is_valid():
+           serializer.save()
+           return Response(serializer.data, status=status.HTTP_201_CREATED)
+       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
 
-def home(request):
-    posts = Post.objects.order_by('-created_at')
-    return render(request, 'home.html', {'posts': posts})
+class PostDetailView(APIView):
+    def get_object(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
+        
+    def get(self, request:HttpRequest, pk, format=None):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request:HttpRequest, pk, format=None):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def PostDetailView(APIView):
+        def delete(self, request:HttpRequest, pk, format=None):
+            post = self.get_object(pk)
+            post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
 
-def detail(request, post_id):
-    post_detail=get_object_or_404(Post, pk=post_id)
-    post_hashtag=post_detail.hashtag.all()
-    return render(request, 'detail.html', {'post': post_detail, 'hashtag': post_hashtag})
 
-def new(request):
-    form=PostForm()
-    return render(request, 'new.html', {'form':form})
-
-def create (request):
-    form=PostForm(request.POST, request.FILES)
-    if form.is_valid():
-        new_diary=form.save(commit=False)
-        new_diary.save()
-        hashtags=request.POST['hashtags']
-        hashtag_list=hashtags.split(', ')
-
-        for tag in hashtag_list:
-            tag = tag.strip()
-            new_hashtag=Hashtag.objects.get_or_create(hashtag=tag)
-            new_diary.hashtag.add(new_hashtag[0])
-        return redirect('diary:detail', new_diary.id)
-    return redirect('diary:home')
-
-def delete(request, post_id):
-    delete_diary = get_object_or_404(Post, pk=post_id)
-    delete_diary.delete()
-    return redirect('diary:home')
-
-def update_page(request, post_id):
-    update_diary = get_object_or_404(Post, pk=post_id)
-    return render(request, 'update.html', {'update_diary': update_diary})
-
-def update_post(request, post_id):
-    update_diary = get_object_or_404(Post, pk=post_id)
-    update_diary.title = request.POST['title']
-    update_diary.content = request.POST['content']
-    update_diary.save()
-    return redirect('diary:home')
+class CommentView(APIView):
+    def post(self, request:HttpRequest, format=None):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
