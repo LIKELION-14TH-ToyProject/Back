@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
 
 
@@ -14,9 +14,32 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
+    
+    tags = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
+        )
+    
+    tag_list = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'date', 'body', 'language', 'comments'
+            'id', 'title', 'date', 'body', 'language', 'comments', 'tags', 'tag_list'
         )
 
+
+    def get_tag_list(self, obj):
+        return [tag.name for tag in obj.tags.all()]
+    
+    def create(self, validated_data):
+        tags = validated_data.pop('tags', [])
+
+        post = Post.objects.create(**validated_data)
+
+        for tag_name in tags:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            post.tags.add(tag)
+
+        return post

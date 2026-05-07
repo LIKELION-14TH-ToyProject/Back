@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from accounts.forms import RegisterForm
+from MTV.accounts.forms import RegisterForm
 def login_view(request):
     if request.method=='POST':
         form=AuthenticationForm(request=request, data=request.POST)

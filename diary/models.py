@@ -8,12 +8,22 @@ LANGUAGE_CHOICES = (
 )
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+   
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
     language = models.IntegerField(choices=LANGUAGE_CHOICES)
+
+    tags = models.ManyToManyField(
+        Tag,
+        blank=True,
+        related_name='posts'
+    )
 
     def __str__(self):
         return self.title
