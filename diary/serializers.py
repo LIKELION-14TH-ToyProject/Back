@@ -1,0 +1,65 @@
+from rest_framework import serializers
+from .models import Post, Comment, Tag
+
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = (
+            'id', 'post', 'username', 'comment_text', 'created_at'
+        )
+
+
+
+class PostSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
+    
+    tags = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
+        )
+    
+    tag_list = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = (
+            'id', 'title', 'date', 'body', 'language', 'comments', 'tags', 'tag_list'
+        )
+
+
+    def get_tag_list(self, obj):
+        return [tag.name for tag in obj.tags.all()]
+    
+    def create(self, validated_data):
+        tags = validated_data.pop('tags', [])
+
+        post = Post.objects.create(**validated_data)
+
+        for tag_name in tags:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            post.tags.add(tag)
+
+        return post
+    
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags', [])
+
+        instance.title = validated_data.get('title', instance.title)
+        instance.body = validated_data.get('body', instance.body)
+        instance.language = validated_data.get('language', instance.language)
+        instance.save()
+
+        instance.tags.clear()
+
+        for tag_name in tags:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            instance.tags.add(tag)
+        
+        # 게시글이 하나도 없는 태그 삭제
+        Tag.objects.filter(posts__isnull=True).delete()
+
+
+        return instance
