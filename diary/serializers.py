@@ -43,3 +43,23 @@ class PostSerializer(serializers.ModelSerializer):
             post.tags.add(tag)
 
         return post
+    
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags', [])
+
+        instance.title = validated_data.get('title', instance.title)
+        instance.body = validated_data.get('body', instance.body)
+        instance.language = validated_data.get('language', instance.language)
+        instance.save()
+
+        instance.tags.clear()
+
+        for tag_name in tags:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            instance.tags.add(tag)
+        
+        # 게시글이 하나도 없는 태그 삭제
+        Tag.objects.filter(posts__isnull=True).delete()
+
+
+        return instance

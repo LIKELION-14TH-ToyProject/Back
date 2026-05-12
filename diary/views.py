@@ -2,7 +2,7 @@ from django.http import HttpRequest, Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Post
+from .models import Post, Tag
 from .serializers import PostSerializer, CommentSerializer
 
 class PostListView(APIView):
@@ -36,14 +36,16 @@ class PostDetailView(APIView):
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status.status.HTTP_200_OK)
+            return Response(serializer.data, status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def PostDetailView(APIView):
-        def delete(self, request:HttpRequest, pk, format=None):
-            post = self.get_object(pk)
-            post.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request:HttpRequest, pk, format=None):
+        post = self.get_object(pk)
+        post.delete()
+
+        Tag.objects.filter(posts__isnull=True).delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
         
 
 
