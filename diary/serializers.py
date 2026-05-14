@@ -26,7 +26,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'date', 'body', 'language', 'comments', 'tags', 'tag_list'
+            'id', 'title', 'date', 'body', 'language', 'photo', 'comments', 'tags', 'tag_list'
         )
 
 
@@ -50,9 +50,11 @@ class PostSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.body = validated_data.get('body', instance.body)
         instance.language = validated_data.get('language', instance.language)
+        instance.photo = validated_data.get('photo', instance.photo)
         instance.save()
 
-        instance.tags.clear()
+        if tags is not None: # 태그 값이 실제로 들어왔을 떄만 수정
+            instance.tags.clear()
 
         for tag_name in tags:
             tag, created = Tag.objects.get_or_create(name=tag_name)

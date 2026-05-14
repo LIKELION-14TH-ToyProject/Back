@@ -21,6 +21,12 @@ class Post(models.Model):
     body = models.TextField()
     language = models.IntegerField(choices=LANGUAGE_CHOICES)
 
+    photo = models.ImageField(
+        upload_to='post_photo/',
+        blank=True,
+        null=True
+    )
+    
     tags = models.ManyToManyField(
         Tag,
         blank=True,
@@ -39,4 +45,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment_text[:20]
-    
+

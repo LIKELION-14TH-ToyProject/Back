@@ -4,14 +4,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post, Tag
 from .serializers import PostSerializer, CommentSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 class PostListView(APIView):
-   def get(self, request:HttpRequest, format=None):
+    parser_classes = [MultiPartParser, FormParser]
+
+
+    def get(self, request:HttpRequest, format=None):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
    
-   def post(self, request:HttpRequest, format=None):
+    def post(self, request:HttpRequest, format=None):
        serializer = PostSerializer(data=request.data)
        if serializer.is_valid():
            serializer.save()
@@ -20,6 +25,8 @@ class PostListView(APIView):
    
 
 class PostDetailView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    
     def get_object(self, pk):
         try:
             return Post.objects.get(pk=pk)
@@ -36,7 +43,7 @@ class PostDetailView(APIView):
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request:HttpRequest, pk, format=None):
