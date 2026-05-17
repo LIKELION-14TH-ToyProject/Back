@@ -15,7 +15,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     
-    tags = serializers.ListField(
+    tag_names = serializers.ListField(
         child=serializers.CharField(),
         write_only=True,
         required=False
@@ -34,7 +34,7 @@ class PostSerializer(serializers.ModelSerializer):
         return [tag.name for tag in obj.tags.all()]
     
     def create(self, validated_data):
-        tag_names = validated_data.pop('tags', [])
+        tag_names = validated_data.pop('tag_names', [])
 
         post = Post.objects.create(**validated_data)
 
@@ -48,7 +48,7 @@ class PostSerializer(serializers.ModelSerializer):
         return post
     
     def update(self, instance, validated_data):
-        tag_names = validated_data.pop('tags', None)
+        tag_names = validated_data.pop('tag_names', None)
 
         instance.title = validated_data.get('title', instance.title)
         instance.body = validated_data.get('body', instance.body)
@@ -59,7 +59,7 @@ class PostSerializer(serializers.ModelSerializer):
         if tag_names is not None: # 태그 값이 실제로 들어왔을 떄만 수정
             instance.tags.clear()
 
-            for tag_name in tags:
+            for tag_name in tag_names:
                 tag_name = tag_name.strip()
 
                 if tag_name:
