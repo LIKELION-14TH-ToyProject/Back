@@ -5,11 +5,11 @@ from rest_framework.views import APIView
 from .models import Post, Tag
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.permissions import IsAuthenticated
 
 class PostListView(APIView):
     parser_classes = [MultiPartParser, FormParser]
-
+    permission_classes = [IsAuthenticated]
 
     def get(self, request:HttpRequest, format=None):
         posts = Post.objects.all()
@@ -26,6 +26,7 @@ class PostListView(APIView):
 
 class PostDetailView(APIView):
     parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self, pk):
         try:
