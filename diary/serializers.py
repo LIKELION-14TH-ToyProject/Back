@@ -26,7 +26,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'date', 'body', 'language', 'photo', 'comments', 'tags', 'tag_list'
+            'id', 'title', 'date', 'body', 'language', 'photo', 'comments', 'tag_names', 'tag_list'
         )
 
 
@@ -34,18 +34,21 @@ class PostSerializer(serializers.ModelSerializer):
         return [tag.name for tag in obj.tags.all()]
     
     def create(self, validated_data):
-        tags = validated_data.pop('tags', [])
+        tag_names = validated_data.pop('tags', [])
 
         post = Post.objects.create(**validated_data)
 
-        for tag_name in tags:
-            tag, created = Tag.objects.get_or_create(name=tag_name)
-            post.tags.add(tag)
+        for tag_name in tag_names:
+            tag_name = tag_name.strip()
+
+            if tag_name:
+                tag, created = Tag.objects.get_or_create(name=tag_name)
+                post.tags.add(tag)
 
         return post
     
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tags', None)
+        tag_names = validated_data.pop('tags', None)
 
         instance.title = validated_data.get('title', instance.title)
         instance.body = validated_data.get('body', instance.body)
@@ -53,7 +56,7 @@ class PostSerializer(serializers.ModelSerializer):
         instance.photo = validated_data.get('photo', instance.photo)
         instance.save()
 
-        if tags is not None: # 태그 값이 실제로 들어왔을 떄만 수정
+        if tag_names is not None: # 태그 값이 실제로 들어왔을 떄만 수정
             instance.tags.clear()
 
             for tag_name in tags:
