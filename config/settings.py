@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-$yw(-!vl0)tnux(u=ik!ic@(7w&@u$ubd5n%2ae%0az&#r4ji0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['likelion.pythonanywhere.com',]
+ALLOWED_HOSTS = [ 
+    '127.0.0.1',
+    'localhost',
+    'likelion.pythonanywhere.com',]
 
 
 # Application definition

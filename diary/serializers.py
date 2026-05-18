@@ -18,7 +18,8 @@ class PostSerializer(serializers.ModelSerializer):
     tag_names = serializers.ListField(
         child=serializers.CharField(),
         write_only=True,
-        required=False
+        required=True,
+        allow_empty=False
         )
     
     tag_list = serializers.SerializerMethodField()
@@ -28,7 +29,14 @@ class PostSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'title', 'date', 'body', 'language', 'photo', 'comments', 'tag_names', 'tag_list'
         )
+    
+    def validate_tag_names(self, value):
+        cleaned_tags = [tag.strip() for tag in value if tag.strip()]
 
+        if not cleaned_tags:
+            raise serializers.ValidationError("태그는 최소 1개 이상 입력해야 합니다.")
+
+        return cleaned_tags
 
     def get_tag_list(self, obj):
         return [tag.name for tag in obj.tags.all()]
