@@ -49,9 +49,6 @@ class UserLoginSerializer(serializers.Serializer):
             return {
                 'id' : user.id,
                 'username' : user.username,
-                'nickname' : user.nickname,
-                'birth' : user.birth,
-                'purpose' : user.purpose,
                 'access' : access,                    
                 'refresh' : refresh
             }
@@ -61,5 +58,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'nickname', 'birth', 'purpose'
+            'id', 'username', 'nickname', 'birth', 'purpose'
         )
+        read_only_fields = ('id', 'username')
