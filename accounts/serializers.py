@@ -49,7 +49,11 @@ class UserLoginSerializer(serializers.Serializer):
             return {
                 'id' : user.id,
                 'username' : user.username,
-                'access' : access,                    'refresh' : refresh
+                'nickname' : user.nickname,
+                'birth' : user.birth,
+                'purpose' : user.purpose,
+                'access' : access,                    
+                'refresh' : refresh
             }
         
 
