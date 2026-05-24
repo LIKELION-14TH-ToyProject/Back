@@ -4,6 +4,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(max_length=128, write_only=True)
+
+
     class Meta:
         model = User
         fields = (
@@ -48,3 +51,11 @@ class UserLoginSerializer(serializers.Serializer):
                 'username' : user.username,
                 'access' : access,                    'refresh' : refresh
             }
+        
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'nickname', 'birth', 'purpose'
+        )

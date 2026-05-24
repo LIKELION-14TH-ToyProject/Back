@@ -41,10 +41,28 @@ class PostDetailView(APIView):
     
     def put(self, request:HttpRequest, pk, format=None):
         post = self.get_object(pk)
-        serializer = PostSerializer(post, data=request.data)
+
+        data = request.data.copy()
+
+        # 이미지 삭제 요청
+        if data.get('photo_clear') == 'true':
+            if post.photo:
+                post.photo.delete(save=False)
+            post.photo = None
+
+            data.pop('photo_clear', None)
+            data.pop('photo', None)
+
+        serializer = PostSerializer(
+            post,
+            data=data,
+            partial=True
+        )
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request:HttpRequest, pk, format=None):
