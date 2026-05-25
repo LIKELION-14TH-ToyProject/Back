@@ -1,20 +1,10 @@
 from rest_framework import serializers
-from .models import Post, Comment, Tag
+from .models import Post, Tag
 
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = (
-            'id', 'post', 'username', 'comment_text', 'created_at'
-        )
 
 
 
 class PostSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(many=True, read_only=True)
-    
     tag_names = serializers.ListField(
         child=serializers.CharField(),
         write_only=True,
@@ -27,7 +17,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'date', 'body', 'language', 'photo', 'comments', 'tag_names', 'tag_list'
+            'id', 'title', 'date', 'body', 'language', 'photo', 'tag_names', 'tag_list'
         )
     
     def validate_tag_names(self, value):
